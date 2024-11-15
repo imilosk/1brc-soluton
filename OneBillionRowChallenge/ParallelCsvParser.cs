@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -15,7 +16,7 @@ public static class ParallelCsvParser
         var chunkCount = Environment.ProcessorCount;
         var dictionaries = InitDictionaries(chunkCount);
 
-        var safeFileHandle = File.OpenHandle(filePath);
+        using var safeFileHandle = File.OpenHandle(filePath);
         var fileLength = RandomAccess.GetLength(safeFileHandle);
 
         var chunkStartOffsets = CalculateChunkStartOffsets(safeFileHandle, chunkCount);
@@ -205,18 +206,18 @@ public static class ParallelCsvParser
     private static void PrintResults(Dictionary<uint, Summary> results)
     {
         var customCulture =
-            (System.Globalization.CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
         Thread.CurrentThread.CurrentCulture = customCulture;
 
-        var sortedDict = results.OrderBy(pair => pair.Value.Name, StringComparer.Ordinal).ToList();
+        var sortedResults = results.OrderBy(pair => pair.Value.Name, StringComparer.Ordinal).ToList();
 
         const double point = FixedPointNumber.Scale;
 
         Console.Write("{");
-        for (var i = 0; i < sortedDict.Count; i++)
+        for (var i = 0; i < sortedResults.Count; i++)
         {
-            var kvp = sortedDict.ElementAt(i);
+            var kvp = sortedResults.ElementAt(i);
             var value = kvp.Value;
 
             var average = value.Sum / point / value.Count;

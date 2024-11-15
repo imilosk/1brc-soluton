@@ -23,3 +23,7 @@ Below are the benchmark results:
 | 10K keys file     | ~8.8 seconds       |
 
 Measured using the `time` command. Feel free to test it on your own system.
+
+## How to run
+- `dotnet build -c Release`
+- `time ./bin/Release/net9.0/OneBillionRowChallenge "../../measurements.txt"`

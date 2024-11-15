@@ -1,5 +1,5 @@
 ﻿using OneBillionRowChallenge;
 
-const string filePath = "../../measurements.txt";
+var filePath = args[0];
 
 ParallelCsvParser.Parse(filePath);
