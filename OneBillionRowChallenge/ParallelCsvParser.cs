@@ -28,12 +28,12 @@ public static class ParallelCsvParser
         PrintResults(mergedDictionary);
     }
 
-    private static Dictionary<uint, Summary>[] InitDictionaries(int chunkCount)
+    private static Dictionary<nint, Summary>[] InitDictionaries(int chunkCount)
     {
-        var dictionaries = new Dictionary<uint, Summary>[chunkCount];
+        var dictionaries = new Dictionary<nint, Summary>[chunkCount];
         for (var i = 0; i < dictionaries.Length; i++)
         {
-            dictionaries[i] = new Dictionary<uint, Summary>(HashTableSize);
+            dictionaries[i] = new Dictionary<nint, Summary>(HashTableSize);
         }
 
         return dictionaries;
@@ -44,7 +44,7 @@ public static class ParallelCsvParser
         long fileLength,
         SafeFileHandle safeFileHandle,
         int numberOfThreads,
-        Dictionary<uint, Summary>[] dictionaries
+        Dictionary<nint, Summary>[] dictionaries
     )
     {
         var threads = new Thread[numberOfThreads];
@@ -70,7 +70,7 @@ public static class ParallelCsvParser
     }
 
     private static void ChunkProcessor(SafeFileHandle sfh, long chunkStart, long chunkSize, int chunkNumber,
-        Dictionary<uint, Summary>[] dictionaries)
+        Dictionary<nint, Summary>[] dictionaries)
     {
         var results = dictionaries[chunkNumber];
 
@@ -91,7 +91,7 @@ public static class ParallelCsvParser
         }
     }
 
-    private static long ProcessBuffer(Span<byte> buffer, Dictionary<uint, Summary> results)
+    private static long ProcessBuffer(Span<byte> buffer, Dictionary<nint, Summary> results)
     {
         var position = 0;
         var delimiterPosition = 0;
@@ -123,7 +123,7 @@ public static class ParallelCsvParser
         return currentLineLength;
     }
 
-    private static void AddMeasurement(ref Span<byte> line, int delimiterPosition, Dictionary<uint, Summary> results)
+    private static void AddMeasurement(ref Span<byte> line, int delimiterPosition, Dictionary<nint, Summary> results)
     {
         var stationSpan = line[..delimiterPosition];
         var temperatureSpan = line[(delimiterPosition + 1)..];
@@ -177,9 +177,9 @@ public static class ParallelCsvParser
         return chunkStartOffsets;
     }
 
-    private static Dictionary<uint, Summary> MergeDictionaries(Dictionary<uint, Summary>[] dictionaries)
+    private static Dictionary<nint, Summary> MergeDictionaries(Dictionary<nint, Summary>[] dictionaries)
     {
-        var mergedDictionary = new Dictionary<uint, Summary>(HashTableSize);
+        var mergedDictionary = new Dictionary<nint, Summary>(HashTableSize);
         foreach (var dictionary in dictionaries)
         {
             foreach (var (key, existingValue) in dictionary)
@@ -203,7 +203,7 @@ public static class ParallelCsvParser
         return mergedDictionary;
     }
 
-    private static void PrintResults(Dictionary<uint, Summary> results)
+    private static void PrintResults(Dictionary<nint, Summary> results)
     {
         var customCulture =
             (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();

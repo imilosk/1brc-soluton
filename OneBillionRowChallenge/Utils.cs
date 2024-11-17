@@ -2,9 +2,9 @@ namespace OneBillionRowChallenge;
 
 public static class Utils
 {
-    public static uint CustomHash(ref Span<byte> key)
+    public static nint CustomHash(ref Span<byte> key)
     {
-        uint h1 = 0;
+        nint h1 = 0;
 
         foreach (var b in key)
         {

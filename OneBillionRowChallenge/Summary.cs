@@ -13,7 +13,8 @@ public struct Summary
         long min,
         long max,
         long sum,
-        nint count)
+        nint count
+    )
     {
         Name = name;
         Min = min;
