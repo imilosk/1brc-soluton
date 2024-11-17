@@ -19,7 +19,7 @@ public static class ParallelCsvParser
         using var safeFileHandle = File.OpenHandle(filePath);
         var fileLength = RandomAccess.GetLength(safeFileHandle);
 
-        var chunkStartOffsets = CalculateChunkStartOffsets(safeFileHandle, chunkCount);
+        var chunkStartOffsets = CalculateChunkStartOffsets(safeFileHandle, fileLength, chunkCount);
 
         ScheduleWorkToThreads(chunkStartOffsets, fileLength, safeFileHandle, chunkCount, dictionaries);
 
@@ -69,8 +69,13 @@ public static class ParallelCsvParser
         }
     }
 
-    private static void ChunkProcessor(SafeFileHandle sfh, long chunkStart, long chunkSize, int chunkNumber,
-        Dictionary<nint, Summary>[] dictionaries)
+    private static void ChunkProcessor(
+        SafeFileHandle sfh,
+        long chunkStart,
+        long chunkSize,
+        int chunkNumber,
+        Dictionary<nint, Summary>[] dictionaries
+    )
     {
         var results = dictionaries[chunkNumber];
 
@@ -153,9 +158,8 @@ public static class ParallelCsvParser
         stationSummary.Count++;
     }
 
-    private static long[] CalculateChunkStartOffsets(SafeFileHandle safeFileHandle, int chunkCount)
+    private static long[] CalculateChunkStartOffsets(SafeFileHandle safeFileHandle, long fileLength, int chunkCount)
     {
-        var fileLength = RandomAccess.GetLength(safeFileHandle);
         var chunkStartOffsets = new long[chunkCount];
         var buffer = new byte[1];
 
@@ -205,8 +209,7 @@ public static class ParallelCsvParser
 
     private static void PrintResults(Dictionary<nint, Summary> results)
     {
-        var customCulture =
-            (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+        var customCulture = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
         Thread.CurrentThread.CurrentCulture = customCulture;
 
